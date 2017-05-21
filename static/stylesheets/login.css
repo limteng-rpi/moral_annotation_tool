@@ -1,0 +1,40 @@
+#panel {
+    position: relative;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin: 200px auto 0 auto;
+    padding: 20px 30px;
+    height: auto;
+    width: 400px;
+    background-color: #f5f5f5;
+    font-size: 12px;
+}
+
+#panel-title {
+    text-align: center;
+    font-size: 18px;
+}
+
+#form-wrapper {
+    position: relative;
+    margin-top: 20px;
+}
+
+#form-wrapper > ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+#form-wrapper > ul > li {
+    margin: 10px 0;
+}
+
+#form-wrapper > ul > li > label {
+    display: inline-block;
+    width: 80px;
+}
+
+#form-wrapper > ul > li > input {
+    width: 250px
+}

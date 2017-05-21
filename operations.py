@@ -137,6 +137,42 @@ def get_dataset_and_document(config, args):
         'document': document
     }
 
+def get_document(config, args):
+    batch_size = args['batch_size'] if 'batch_size' in args else 50
+    dataset = args['dataset']
+    username = args['username']
+    db_host = config['db']['host']
+    db_port = int(config['db']['port'])
+    client = MongoClient(host=db_host, port=db_port)
+    col_document = client[config['db']['name']][config['db']['col.document']]
+    col_annotation = client[config['db']['name']][config['db']['col.annotation']]
+    annotated_doc = set()
+    for anno in col_annotation.find({'username': username}):
+        annotated_doc.add(anno['uuid'])
+    batch = []
+    for doc in col_document.find({'dataset': dataset}):
+        uuid = doc['_id']
+        if uuid in annotated_doc:
+            continue
+        timestamp = time.strftime("%b %d, %Y %H:%M:%S",
+                                         time.localtime(doc['timestamp']))
+        tid = doc['tid']
+        text = doc['full_text']
+        text_char = [c for c in text]
+        retweet = doc['retweet']
+        batch.append({
+            'id': uuid,
+            'timestamp': timestamp,
+            'text': text,
+            'text_char': text_char,
+            'retweet': retweet,
+            'tid': tid
+        })
+        if len(batch) >= batch_size:
+            break
+    client.close()
+    return batch
+
 def add_document(config, args):
     id_list = args['id_list']
     if type(id_list) is str:

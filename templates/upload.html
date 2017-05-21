@@ -6,19 +6,28 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='stylesheets/normalize.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='stylesheets/w2ui-1.5.rc1.min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='stylesheets/base.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='stylesheets/management.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='stylesheets/upload.css') }}">
 </head>
 <body>
     <div id="banner"></div>
     <div id="main">
         <div id="form-wrapper">
-            <form enctype=multipart/form-data>
-                <input type=file>
+            Please pack all JSON files in a ZIP archive. Each JSON files can
+            contains more than one JSON object (a tweet).
+            <br/>
+            <form enctype=multipart/form-data action="/upload" method="post">
+                <label>Dataset name: <input name="dataset" type="text" maxlength="20"/></label>
+                <label>Data format: <select name="format" >
+                    <option value="twitter_api">Twitter API</option>
+                    <option value="gnip">Gnip</option>
+                </select></label>
+                <label>Data file: <input name="file" type=file></label>
+                <button type="submit">Upload</button>
             </form>
         </div>
     </div>
     <script src="{{ url_for('static', filename='javascripts/jquery-3.2.1.min.js') }}"></script>
     <script src="{{ url_for('static', filename='javascripts/w2ui-1.5.rc1.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='javascripts/management.js') }}"></script>
+    <script src="{{ url_for('static', filename='javascripts/upload.js') }}"></script>
 </body>
 </html>
