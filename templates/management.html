@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Moral Annotation Tool | Management</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='stylesheets/normalize.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='stylesheets/w2ui-1.5.rc1.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='stylesheets/base.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='stylesheets/management.css') }}">
+</head>
+<body>
+    <div id="banner"></div>
+    <div id="main">
+        <div id="grid-wrapper">
+            <div id="dataset"></div>
+            <div id="splitter"></div>
+            <div id="document"></div>
+        </div>
+        <div id="btn-wrapper">
+            <button id="add-btn" class="silver" style="float: left;">Upload</button>
+            <button id="add-btn" class="silver">Add</button>
+            <button id="remove-btn" class="silver">Remove</button>
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='javascripts/jquery-3.2.1.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='javascripts/w2ui-1.5.rc1.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='javascripts/management.js') }}"></script>
+</body>
+</html>

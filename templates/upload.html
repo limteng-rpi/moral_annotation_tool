@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Moral Annotation Tool | Upload</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='stylesheets/normalize.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='stylesheets/w2ui-1.5.rc1.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='stylesheets/base.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='stylesheets/management.css') }}">
+</head>
+<body>
+    <div id="banner"></div>
+    <div id="main">
+        <div id="form-wrapper">
+            <form enctype=multipart/form-data>
+                <input type=file>
+            </form>
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='javascripts/jquery-3.2.1.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='javascripts/w2ui-1.5.rc1.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='javascripts/management.js') }}"></script>
+</body>
+</html>

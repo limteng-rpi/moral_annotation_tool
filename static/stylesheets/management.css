@@ -1,0 +1,24 @@
+#grid-wrapper {
+    display: table;
+    padding: 20px;
+    height: 600px;
+    width: 100%;
+}
+
+#dataset, #document {
+    display: table-cell;
+    height: 100%;
+    width: 49.5%;
+}
+
+#splitter {
+    z-index: 9;
+    display: table-cell;
+    height: 100%;
+    width: 1%;
+}
+
+#btn-wrapper {
+    padding: 0 20px;
+    text-align: right;
+}
