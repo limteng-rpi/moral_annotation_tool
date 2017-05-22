@@ -4,11 +4,31 @@
     <meta charset="UTF-8">
     <title>Moral Annotation Tool</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='stylesheets/normalize.css') }}">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
+          rel="stylesheet"
+          integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN"
+          crossorigin="anonymous">
     <link rel="stylesheet" href="{{ url_for('static', filename='stylesheets/w2ui-1.5.rc1.min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='stylesheets/base.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='stylesheets/index.css') }}">
+
 </head>
 <body>
-
+    <div id="banner">
+        <div id="banner-title"><b>Moral Annotation Tool</b> | Overview</div>
+        <a id="logout" href="/logout"><i class="fa fa-child" aria-hidden="true"></i> logout</a>
+        {% if username == 'admin' %}
+            <a id="management" href="/management"><i class="fa fa-cog" aria-hidden="true"></i> management</a>
+        {% endif %}
+    </div>
+    <div id="main" username="{{ username }}">
+        <div id="wrapper">
+            <div id="toolbar"></div>
+            <div id="document"></div>
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='javascripts/jquery-3.2.1.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='javascripts/w2ui-1.5.rc1.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='javascripts/index.js') }}"></script>
 </body>
 </html>

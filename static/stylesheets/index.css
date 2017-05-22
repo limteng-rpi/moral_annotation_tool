@@ -1,0 +1,12 @@
+#wrapper {
+    padding: 20px;
+}
+
+#toolbar {
+    border: 1px solid #ddd;
+    height: 35px;
+}
+
+#document {
+    height: 400px;
+}

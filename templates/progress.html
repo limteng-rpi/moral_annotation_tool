@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Moral Annotation Tool | Management</title>
+    <title>Moral Annotation Tool | Progress</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='stylesheets/normalize.css') }}">
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
           rel="stylesheet"
@@ -10,29 +10,23 @@
           crossorigin="anonymous">
     <link rel="stylesheet" href="{{ url_for('static', filename='stylesheets/w2ui-1.5.rc1.min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='stylesheets/base.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='stylesheets/management.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='stylesheets/progress.css') }}">
+
 </head>
 <body>
     <div id="banner">
-        <div id="banner-title"><b><a href="/">Moral Annotation Tool</a></b> | Management</div>
+        <div id="banner-title"><b>Moral Annotation Tool</b> | Progress</div>
         <a id="home" href="/"><i class="fa fa-home" aria-hidden="true"></i> home</a>
         <a id="logout" href="/logout"><i class="fa fa-child" aria-hidden="true"></i> logout</a>
     </div>
-    <div id="main">
-        <div id="grid-wrapper">
-            <div id="dataset"></div>
-            <div id="splitter"></div>
+    <div id="main" username="{{ username }}">
+        <div id="wrapper">
+            <div id="toolbar"></div>
             <div id="document"></div>
-        </div>
-        <div id="btn-wrapper">
-            <button id="add-btn" class="silver" style="float: left;"
-                    onclick="window.location.replace('/upload'); return false;">Upload</button>
-            <button id="add-btn" class="silver">Add</button>
-            <button id="remove-btn" class="silver">Remove</button>
         </div>
     </div>
     <script src="{{ url_for('static', filename='javascripts/jquery-3.2.1.min.js') }}"></script>
     <script src="{{ url_for('static', filename='javascripts/w2ui-1.5.rc1.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='javascripts/management.js') }}"></script>
+    <script src="{{ url_for('static', filename='javascripts/progress.js') }}"></script>
 </body>
 </html>

@@ -4,25 +4,59 @@
     <meta charset="UTF-8">
     <title>Moral Annotation Tool</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='stylesheets/normalize.css') }}">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
+          rel="stylesheet"
+          integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN"
+          crossorigin="anonymous">
     <link rel="stylesheet" href="{{ url_for('static', filename='stylesheets/w2ui-1.5.rc1.min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='stylesheets/base.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='stylesheets/annotation.css') }}">
 </head>
 <body>
-    <div id="banner"></div>
-    <div id="main">
+    <div id="banner">
+        <div id="banner-title"><b><a href="/">Moral Annotation Tool</a></b> | Annotation</div>
+        <a id="home" href="/"><i class="fa fa-home" aria-hidden="true"></i> home</a>
+        <a id="logout" href="/logout"><i class="fa fa-child" aria-hidden="true"></i> logout</a>
+    </div>
+    <div id="main" dataset="{{ dataset }}">
         <div id="anno-wrapper">
             <ul id="doc-list">
                 {% for doc in doc_list %}
-                    <li class="doc-item" doc-id="{{ doc.id }}">
-                        <div class="doc-body" doc-id="{{ doc.id }}">
+                    <li class="doc-item" uuid="{{ doc.id }}">
+                        <div class="doc-body" uuid="{{ doc.id }}">
                             {% for char in doc.text_char %}
-                                <span class="doc-body-char" doc-id="{{ doc.id }}">{{ char }}</span>
+                                <span class="doc-body-char" uuid="{{ doc.id }}" char-index="{{ char[0] }}">{{ char[1] }}</span>
                             {% endfor %}
+                        </div>
+                        <div class="category-btn-wrapper" uuid="{{ doc.id }}">
+                            <button class="category-btn anno-btn" value="nm" uuid="{{ doc.id }}">Non-moral</button>
+                            <button class="category-btn anno-btn" value="care" uuid="{{ doc.id }}">Care</button>
+                            <button class="category-btn anno-btn" value="harm" uuid="{{ doc.id }}">Harm</button>
+                            <button class="category-btn anno-btn" value="fairness" uuid="{{ doc.id }}">Fairness</button>
+                            <button class="category-btn anno-btn" value="cheating" uuid="{{ doc.id }}">Cheating</button>
+                            <button class="category-btn anno-btn" value="loyalty" uuid="{{ doc.id }}">Loyalty</button>
+                            <button class="category-btn anno-btn" value="betrayal" uuid="{{ doc.id }}">Betrayal</button>
+                            <button class="category-btn anno-btn" value="authority" uuid="{{ doc.id }}">Authority</button>
+                            <button class="category-btn anno-btn" value="subversion" uuid="{{ doc.id }}">Subversion</button>
+                            <button class="category-btn anno-btn" value="purity" uuid="{{ doc.id }}">Purity</button>
+                            <button class="category-btn anno-btn" value="degradation" uuid="{{ doc.id }}">Degradation</button>
+                        </div>
+                        <div class="mark-btn-wrapper" uuid="{{ doc.id }}">
+                            <button class="anno-btn unclear-btn" uuid="{{ doc.id }}">Unclear</button>
+                            <button class="anno-btn skip-btn" uuid="{{ doc.id }}">Skip</button>
+                        </div>
+                        <div class="issue-wrapper" uuid="{{ doc.id }}">
+                            <label>Issue: <input uuid="{{ doc.id }}" class="issue-input" type="text" maxlength="100" style="width: 200px;"/></label>
+                        </div>
+                        <div class="comment-wrapper" uuid="{{ doc.id }}">
+                            <label>Comment: <input uuid="{{ doc.id }}" class="comment-input" type="text" maxlength="200" style="width: 300px;"/></label>
                         </div>
                     </li>
                 {% endfor %}
             </ul>
+            <div>
+                <button id="submit-btn">Submit</button>
+            </div>
         </div>
     </div>
     <script src="{{ url_for('static', filename='javascripts/jquery-3.2.1.min.js') }}"></script>

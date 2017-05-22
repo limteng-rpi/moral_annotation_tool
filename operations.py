@@ -1,8 +1,11 @@
+import re
 import json
 import time
 import uuid
 import zipfile
 from pymongo import MongoClient
+from passlib.hash import pbkdf2_sha256
+from bson import json_util, ObjectId
 from configparser import ConfigParser
 
 def __parser_twitter_api(reader):
@@ -92,7 +95,6 @@ def import_dataset(config, args):
     print(rst)
     print('{} documents are inserted'.format(doc_num))
 
-
 def get_dataset(config, args):
     """Get all documents.
     
@@ -158,7 +160,7 @@ def get_document(config, args):
                                          time.localtime(doc['timestamp']))
         tid = doc['tid']
         text = doc['full_text']
-        text_char = [c for c in text]
+        text_char = [[i, c] for i, c in enumerate(text, 0)]
         retweet = doc['retweet']
         batch.append({
             'id': uuid,
@@ -207,12 +209,172 @@ def remove_document(config, args):
     client.close()
     return 0
 
+def encrypt_password(password, rounds=100000, salt_size=3):
+    return pbkdf2_sha256.encrypt(password, rounds=rounds, salt_size=salt_size)
+
+def verify_password(password, encrypt):
+    return pbkdf2_sha256.verify(password, encrypt)
+
+def add_user(config, args):
+    try:
+        username = args['username']
+        password = args['password']
+        first_name = args['firstname']
+        last_name = args['lastname']
+
+        username_pattern = re.compile('^[A-Za-z0-9]{4,20}$')
+        name_pattern = re.compile('^[A-Za-z]{1,30}$')
+        password_pattern = re.compile('^[A-Za-z0-9#\\.@$%^_-]{8,20}$')
+
+        if not username_pattern.match(username):
+            return {'code': 406, 'msg': 'Invalid username'}
+        if not name_pattern.match(first_name):
+            return {'code': 406, 'msg': 'Invalid first name'}
+        if not name_pattern.match(last_name):
+            return {'code': 406, 'msg': 'Invalid last name'}
+        if not password_pattern.match(password):
+            return {'code': 406, 'msg': 'Invalid password'}
+
+        db_host = config['db']['host']
+        db_port = int(config['db']['port'])
+        client = MongoClient(host=db_host, port=db_port)
+        user_col = client[config['db']['name']][config['db']['col.user']]
+
+        if user_col.find_one({'_id': username}) is not None:
+            client.close()
+            return {'code': 406, 'msg': 'This username has been used'}
+
+        user_col.insert({
+            '_id': username,
+            'first_name': first_name,
+            'last_name': last_name,
+            'username': username,
+            'password': encrypt_password(password)
+        })
+        client.close()
+        return {'code': 200}
+    except Exception as e:
+        print(e)
+        return {'code': 500, 'msg': e}
+
+def check_user(config, args):
+    try:
+        username = args['username']
+        password = args['password']
+
+        db_host = config['db']['host']
+        db_port = int(config['db']['port'])
+        client = MongoClient(host=db_host, port=db_port)
+        user_col = client[config['db']['name']][config['db']['col.user']]
+
+        user_record = user_col.find_one({'_id': username})
+        client.close()
+        if user_record is None:
+            return {'code': 404, 'msg': 'Username doesn\'t exist'}
+        else:
+            encrypt = user_record['password']
+            if verify_password(password, encrypt):
+                return {'code': 200}
+            else:
+                return {'code': 401, 'msg': 'Incorrect password'}
+    except Exception as e:
+        return {'code': 500, 'msg': str(e)}
+
+def add_annotation(config, args):
+    try:
+        username = args['username']
+        annotation_list = json.loads(args['annotation_list'])
+        db_host = config['db']['host']
+        db_port = int(config['db']['port'])
+        client = MongoClient(host=db_host, port=db_port)
+        col_annotation = client[config['db']['name']][config['db']['col.annotation']]
+        bulk = col_annotation.initialize_unordered_bulk_op()
+        for annotation in annotation_list:
+            annotation['username'] = username
+            bulk.insert(annotation)
+        rst = bulk.execute()
+        client.close()
+        print(rst)
+        return True
+    except Exception as e:
+        print(e)
+        return False
+
+def get_dataset_names(config, args):
+    db_host = config['db']['host']
+    db_port = int(config['db']['port'])
+    client = MongoClient(host=db_host, port=db_port)
+    doc_col = client[config['db']['name']][config['db']['col.document']]
+    dataset = set()
+    for doc in doc_col.find():
+        dataset.add(doc['dataset'])
+    client.close()
+    return list(dataset)
+
+def get_user_document(config, args):
+    dataset = args['dataset']
+    username = args['username']
+
+    db_host = config['db']['host']
+    db_port = int(config['db']['port'])
+    client = MongoClient(host=db_host, port=db_port)
+    col_document = client[config['db']['name']][config['db']['col.document']]
+    col_annotation = client[config['db']['name']][config['db']['col.annotation']]
+
+    annotated_doc = set()
+    document_list = []
+    for anno in col_annotation.find({'username': username}):
+        annotated_doc.add(anno['uuid'])
+    for doc in col_document.find({'dataset': dataset}):
+        uuid = doc['_id']
+        timestamp = time.strftime("%b %d, %Y %H:%M:%S",
+                                  time.localtime(doc['timestamp']))
+        tid = doc['tid']
+        text = doc['full_text']
+        retweet = '●' if doc['retweet'] else '○'
+        annotated = '●' if uuid in annotated_doc else '○'
+        document_list.append({
+            'recid': len(document_list),
+            'uuid': uuid,
+            'timestamp': timestamp,
+            'text': text,
+            'retweet': retweet,
+            'annotated': annotated,
+            'tid': tid
+        })
+    client.close()
+    return document_list
+
+def get_progress(config, args):
+    dataset = args['dataset']
+    db_host = config['db']['host']
+    db_port = int(config['db']['port'])
+    client = MongoClient(host=db_host, port=db_port)
+    col_document = client[config['db']['name']][config['db']['col.document']]
+    col_annotation = client[config['db']['name']][config['db']['col.annotation']]
+    annotation_list = []
+    for anno in col_annotation.find({'dataset': dataset}):
+        uuid = anno['uuid']
+        doc = col_document.find_one({'_id': uuid})
+        anno['doc'] = doc
+        annotation_list.append(anno)
+
+    client.close()
+    return annotation_list
+
 __operation_entries = {
     'import_dataset': import_dataset,
     'get_dataset': get_dataset,
     'add_document': add_document,
     'remove_document': remove_document,
-    'get_dataset_and_document': get_dataset_and_document
+    'get_dataset_and_document': get_dataset_and_document,
+    'get_document': get_document,
+    'get_dataset_names': get_dataset_names,
+    'get_user_document': get_user_document
+}
+
+__admin_operation_entries = {
+    'add_user': add_user
 }
 
 # config = ConfigParser()

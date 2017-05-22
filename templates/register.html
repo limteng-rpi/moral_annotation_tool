@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Moral Annotation Tool | Login</title>
+    <title>Moral Annotation Tool | Register</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='stylesheets/normalize.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='stylesheets/w2ui-1.5.rc1.min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='stylesheets/base.css') }}">
@@ -10,11 +10,12 @@
 </head>
 <body>
     <div id="banner">
-        <div id="banner-title"><b>Moral Annotation Tool</b> | Login</div>
+        <div id="banner-title"><b><a href="/">Moral Annotation Tool</a></b> | Register</div>
+        <a id="home" href="/"><i class="fa fa-home" aria-hidden="true"></i> home</a>
     </div>
     <div id="main">
         <div id="panel">
-            <div id="panel-title">Login</div>
+            <div id="panel-title">Register</div>
             <div id="form-wrapper">
                 <ul>
                     <li>
@@ -25,10 +26,17 @@
                         <label for="">Password</label>
                         <input id="input-password" type="password" maxlength="20"/>
                     </li>
+                    <li>
+                        <label for="input-firstname">First Name</label>
+                        <input id="input-firstname" type="text" maxlength="20"/>
+                    </li>
+                    <li>
+                        <label for="input-lastname">Last Name</label>
+                        <input id="input-lastname" type="text" maxlength="20"/>
+                    </li>
                     <li style="text-align: center;">
                         <div id="msg"></div>
-                        <button id="reg-jump-btn" onclick="window.location.replace('/register'); return false;">Register</button>
-                        <button id="login-btn">Login</button>
+                        <button id="reg-btn">Register</button>
                     </li>
                 </ul>
             </div>
@@ -36,6 +44,6 @@
     </div>
     <script src="{{ url_for('static', filename='javascripts/jquery-3.2.1.min.js') }}"></script>
     <script src="{{ url_for('static', filename='javascripts/w2ui-1.5.rc1.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='javascripts/login.js') }}"></script>
+    <script src="{{ url_for('static', filename='javascripts/register.js') }}"></script>
 </body>
 </html>

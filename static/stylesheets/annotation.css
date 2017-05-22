@@ -1,0 +1,235 @@
+#anno-wrapper {
+    padding: 20px 30px;
+    width: 100%;
+}
+
+ul#doc-list {
+    list-style: none;
+}
+
+.doc-body {
+    font-size: 0;
+}
+
+li.doc-item {
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 15px;
+    margin-bottom: 10px;
+}
+
+span.doc-body-char {
+    display: inline-block;
+    width: 8px;
+    font-family: Menlo, monospace;
+    font-size: 13px;
+    line-height: 2;
+    cursor: pointer;
+}
+
+span.doc-body-char:hover {
+    background-color: #f2f2f2;
+}
+
+button.anno-btn {
+	display: inline-block;
+	position: relative;
+
+	/*float: left;*/
+	border: 1px solid #d5d5d5;
+	/*border-right-width: 0;*/
+	border-radius: 0;
+	margin-left: -1px;
+	padding: 3px 10px;
+	font-size: 12px;
+	font-weight: 600;
+	line-height: 20px;
+
+	color: #333;
+	white-space: nowrap;
+	vertical-align: middle;
+	cursor: pointer;
+
+	background-color: #eee;
+	background-image: -webkit-linear-gradient(#fcfcfc, #eee);
+	background-image: linear-gradient(#fcfcfc, #eee);
+	outline: none;
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	appearance: none;
+}
+
+button.anno-btn:first-child {
+	border-top-left-radius: 3px;
+	border-bottom-left-radius: 3px;
+}
+
+button.anno-btn:last-child {
+	border-right-width: 1px;
+	border-top-right-radius: 3px;
+	border-bottom-right-radius: 3px;
+}
+
+sp#anno-wrapper {
+    padding: 20px 30px;
+    width: 100%;
+}
+
+ul#doc-list {
+    list-style: none;
+}
+
+.doc-body {
+    font-size: 0;
+}
+
+li.doc-item {
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 15px;
+    margin-bottom: 15px;
+}
+
+li.doc-item:hover,
+li.doc-item:focus {
+    border-color: #0A96DE;
+}
+
+span.doc-body-char {
+    display: inline-block;
+    height: 24px;
+    width: 8px;
+    font-family: Menlo, monospace;
+    font-size: 13px;
+    line-height: 2;
+    cursor: pointer;
+    vertical-align: bottom;
+}
+
+span.doc-body-char:hover {
+    background-color: #f2f2f2;
+}
+
+span.doc-body-char[hl='true'] {
+    background-color: rgba(10, 150, 222, .1);
+}
+
+
+/* Category buttons */
+.category-btn-wrapper,
+.mark-btn-wrapper {
+    margin-top: 15px;
+    font-size: 0;
+}
+
+.mark-btn-wrapper {
+    display: inline-block;
+}
+.issue-wrapper,
+.comment-wrapper {
+    padding: 3px 10px;
+    display: inline-block;
+    font-size: 12px;
+    vertical-align: bottom;
+}
+
+button.anno-btn {
+	display: inline-block;
+	position: relative;
+
+	/*float: left;*/
+	border: 1px solid #d5d5d5;
+	/*border-right-width: 0;*/
+	border-radius: 0;
+	margin-left: -1px;
+	padding: 3px 10px;
+	font-size: 12px;
+	font-weight: 600;
+	line-height: 20px;
+
+	color: #333;
+	white-space: nowrap;
+	vertical-align: middle;
+	cursor: pointer;
+
+	background-color: #eee;
+	background-image: -webkit-linear-gradient(#fcfcfc, #eee);
+	background-image: linear-gradient(#fcfcfc, #eee);
+	outline: none;
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	appearance: none;
+}
+
+button.anno-btn:first-child {
+	border-top-left-radius: 3px;
+	border-bottom-left-radius: 3px;
+}
+
+button.anno-btn:last-child {
+	border-right-width: 1px;
+	border-top-right-radius: 3px;
+	border-bottom-right-radius: 3px;
+}
+
+button.anno-btn:hover,
+button.anno-btn:focus,
+button.doc-anno-btn:active {
+	z-index: 2;
+}
+
+button.anno-btn:hover {
+	background-color: #ddd;
+	background-image: -webkit-linear-gradient(#eee, #ddd);
+	background-image: linear-gradient(#eee, #ddd);
+	border-color: #ccc;
+}
+
+button.anno-btn:active {
+	background-color: #dcdcdc;
+	background-image: none;
+	border-color: #b5b5b5;
+	box-shadow: inset 0 2px 4px rgba(0,0,0,0.15);
+}
+
+button.anno-btn:focus {
+	border-color: #51a7e8;
+	box-shadow: 0 0 5px rgba(81,167,232,0.5);
+}
+
+button.anno-btn[labeled='true'] {
+	z-index: 3;
+	color: #2480e2;
+	border-color: #51a7e8;
+	box-shadow: 0 0 5px rgba(81,167,232,0.1) inset;
+}
+
+button.anno-btn:hover, span.doc-anno-btn:active {
+	z-index: 2;
+}
+
+button.anno-btn:hover {
+	background-color: #ddd;
+	background-image: -webkit-linear-gradient(#eee, #ddd);
+	background-image: linear-gradient(#eee, #ddd);
+	border-color: #ccc;
+}
+
+button.anno-btn:active {
+	background-color: #dcdcdc;
+	background-image: none;
+	border-color: #b5b5b5;
+	box-shadow: inset 0 2px 4px rgba(0,0,0,0.15);
+}
+
+button.anno-btn:focus {
+	border-color: #51a7e8;
+	box-shadow: 0 0 5px rgba(81,167,232,0.5);
+}
+
+button.anno-btn[labeled='true'] {
+	z-index: 3;
+	color: #2480e2;
+	border-color: #51a7e8;
+	box-shadow: 0 0 5px rgba(81,167,232,0.1) inset;
+}

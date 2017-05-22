@@ -9,3 +9,13 @@
 #form-wrapper > form > label {
     display: block;
 }
+
+#msg {
+    display: none;
+    width: 400px;
+    border: 1px solid rgba(139, 0, 0, .3);
+    border-radius: 3px;
+    margin-bottom: 5px;
+    padding: 3px;
+    background-color: rgba(255, 0, 0, .1);
+}
