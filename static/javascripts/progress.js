@@ -48,7 +48,7 @@ function init_toolbar() {
                         return 'Dataset: ' + selected.text;
                     }
             });
-            // select_dataset();
+            select_dataset();
         }
     })
 }
@@ -115,7 +115,18 @@ function init_document() {
         searches: [
             {field: 'tid', caption: 'Tweet ID', type: 'text'},
             {field: 'annotator', caption: 'Annotator', type: 'text'},
-
         ]
     })
+}
+
+function select_dataset() {
+    var dataset = w2ui.toolbar.get('dataset:' + w2ui.toolbar.get('dataset').selected).id;
+    $.getJSON('/progress?dataset=' + username
+        + '&dataset=' + dataset, function(response) {
+        if (response.code === 200) {
+            var doc_list = response.result;
+            w2ui.document.clear();
+            w2ui.document.add(doc_list);
+        }
+    });
 }

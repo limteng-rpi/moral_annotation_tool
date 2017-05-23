@@ -2,7 +2,7 @@ import os
 from flask import Flask, redirect, jsonify, render_template, request, session
 from werkzeug.utils import secure_filename
 from operations import __operation_entries, __admin_operation_entries, \
-    check_user, add_annotation
+    check_user, add_annotation, get_progress
 from urllib.parse import quote_plus
 from bson import json_util, ObjectId
 
@@ -35,7 +35,10 @@ def management():
 @app.route('/progress')
 def progress():
     if session.get('login') and session.get('username') == 'admin':
-        return render_template('progress.html')
+        if request.method == 'GET':
+            return render_template('progress.html')
+        elif request.method == 'POST':
+            return jsonify({'code': 200, 'result': get_progress(config, request.form)})
     else:
         return redirect('/login?redirect={}'.format(quote_plus(request.url)))
 
