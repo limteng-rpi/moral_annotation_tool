@@ -114,7 +114,7 @@ function extract_annotation(uuid) {
     var annotation = {
         uuid: uuid,
         dataset: $('#main').attr('dataset'),
-        timestamp: Date.now()
+        timestamp: parseInt(Date.now() / 1000)
     };
     annotation['comment'] = $('input.comment-input[uuid="' + uuid + '"]').val();
     if ($('.unclear-btn[uuid="' + uuid + '"]').attr('labeled') === 'true') {

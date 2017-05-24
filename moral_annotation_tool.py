@@ -1,8 +1,10 @@
 import os
-from flask import Flask, redirect, jsonify, render_template, request, session
+import time
+from flask import Flask, redirect, jsonify, render_template, request, session,\
+    Response, send_from_directory
 from werkzeug.utils import secure_filename
 from operations import __operation_entries, __admin_operation_entries, \
-    check_user, add_annotation, get_progress
+    check_user, add_annotation, get_progress, create_annotation_file
 from urllib.parse import quote_plus
 from bson import json_util, ObjectId
 
@@ -14,9 +16,12 @@ app = Flask(__name__)
 config = ConfigParser()
 config.read(os.path.join(__current_dir, 'global.conf'))
 __upload_dir = os.path.join(__current_dir, config['default']['upload_dir'])
+__download_dir = os.path.join(__current_dir, config['default']['download_dir'])
 
 if not os.path.exists(__upload_dir):
     os.makedirs(__upload_dir)
+if not os.path.exists(__download_dir):
+    os.makedirs(__download_dir)
 
 @app.route('/')
 def hello_world():
@@ -32,15 +37,16 @@ def management():
     else:
         return redirect('/login?redirect={}'.format(quote_plus(request.url)))
 
-@app.route('/progress')
+@app.route('/progress', methods=['GET', 'POST'])
 def progress():
     if session.get('login') and session.get('username') == 'admin':
         if request.method == 'GET':
             return render_template('progress.html')
-        elif request.method == 'POST':
-            return jsonify({'code': 200, 'result': get_progress(config, request.form)})
+        else:
+            return json_util.dumps({'code': 200, 'result': get_progress(config, request.form)})
     else:
         return redirect('/login?redirect={}'.format(quote_plus(request.url)))
+
 
 @app.route('/annotation', methods=['GET', 'POST'])
 def annotation():
@@ -76,6 +82,7 @@ def annotation():
             return 'Invalid method: {}'.format(request.method)
     else:
         return redirect('/login?redirect={}'.format(quote_plus(request.url)))
+
 
 @app.route('/operation', methods=['GET', 'POST'])
 def operation():
@@ -118,6 +125,7 @@ def upload():
                         'path': os.path.join(__upload_dir, filename),
                         'parser': format
                     })
+                    os.unlink(os.path.join(__upload_dir, filename))
                     return jsonify({'code': 200, 'msg': 'File uploaded'})
                 else:
                     return jsonify({'code': 500, 'msg': 'Please upload ZIP archive'})
@@ -143,6 +151,7 @@ def login():
     else:
         return 'Invalid method: {}'.format(request.method)
 
+
 @app.route('/logout')
 def logout():
     session['login'] = False
@@ -162,7 +171,30 @@ def register():
         return 'Invalid method: {}'.format(request.method)
 
 
+@app.route("/export", methods=['POST', 'GET'])
+def export():
+    if request.method == 'POST':
+        for f in os.listdir(__download_dir):
+            f = os.path.join(__download_dir, f)
+            try:
+                if os.path.isfile(f):
+                    os.unlink(f)
+            except Exception as e:
+                print(e)
+        file_content = create_annotation_file(config, request.form)
+        filename = os.path.join(__download_dir, 'annotation_{}.tsv'
+                .format(int(time.time())))
+        with open(filename, 'w', encoding='utf-8') as w:
+            w.write(file_content)
+            w.close()
+        return jsonify({'filename': os.path.basename(filename)})
 
+@app.route('/download/<path:filename>', methods=['GET'])
+def download(filename):
+    if session.get('login') and session.get('username') == 'admin':
+        return send_from_directory(directory=__download_dir, filename=filename)
+    else:
+        return jsonify({'code': 401, 'msg': 'Authorization failed: need admin account'})
 
 if __name__ == '__main__':
     app.secret_key = os.urandom(12)

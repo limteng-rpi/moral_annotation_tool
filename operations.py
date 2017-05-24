@@ -3,6 +3,7 @@ import json
 import time
 import uuid
 import zipfile
+import traceback
 from pymongo import MongoClient
 from passlib.hash import pbkdf2_sha256
 from bson import json_util, ObjectId
@@ -14,7 +15,9 @@ def __parser_twitter_api(reader):
             line = str(line, encoding='utf-8')
             tweet = json.loads(line)
             tid = tweet['id_str']
-            timestamp = int(tweet['timestamp_ms'])
+            # Mon Apr 17 15:33:04 +0000 2017
+            timestamp = time.mktime(time.strptime(tweet['created_at'][4:],
+                                                  '%b %d %H:%M:%S %z %Y'))
             retweet = 'retweeted_status' in tweet
             text = tweet['text']
             full_text = tweet['retweeted_status']['text'] if retweet else tweet['text']
@@ -28,6 +31,7 @@ def __parser_twitter_api(reader):
                 'entities': entities
             }
         except Exception:
+            traceback.print_exc()
             yield None
 
 def __parser_gnip(reader):
@@ -78,8 +82,11 @@ def import_dataset(config, args):
 
     bulk = collection.initialize_unordered_bulk_op()
     archive = zipfile.ZipFile(data_path, 'r')
-    files = archive.namelist()
+    files = [f for f in archive.namelist() if not f.startswith('__MACOSX')
+             and f.endswith('json')]
+    print(args)
     print('Found {} file(s) in the archive'.format(len(files)))
+    print(files)
     doc_num = 0
     for f in files:
         for tweet in parser(archive.open(f)):
@@ -357,10 +364,44 @@ def get_progress(config, args):
         uuid = anno['uuid']
         doc = col_document.find_one({'_id': uuid})
         anno['doc'] = doc
+        anno['tid'] = doc['tid']
+        anno['text'] = doc['full_text']
+        anno['recid'] = len(annotation_list)
+        anno['unclear'] = '●' if 'unclear' in anno and anno['unclear'] else '○'
+        anno['skip'] = '●' if 'skip' in anno and anno['skip'] else '○'
+        anno['retweet'] = '●' if doc['retweet'] else '○'
+        anno['timestamp'] = time.strftime("%b %d, %Y %H:%M:%S",
+                                          time.localtime(anno['timestamp']))
         annotation_list.append(anno)
-
     client.close()
     return annotation_list
+
+def create_annotation_file(config, args):
+    id_list = json_util.loads(args['id_list'])
+    db_host = config['db']['host']
+    db_port = int(config['db']['port'])
+    client = MongoClient(host=db_host, port=db_port)
+    col_document = client[config['db']['name']][config['db']['col.document']]
+    col_annotation = client[config['db']['name']][config['db']['col.annotation']]
+    result = 'Dataset\tTweet ID\tUsername\tFoundation\tComment\tAbstract Issue' \
+             '\tIssue Start\tIssue End\tIssue\n'
+    for _id in id_list:
+        anno = col_annotation.find_one({'_id': _id})
+        uuid = anno['uuid']
+        dataset = anno['dataset']
+        username = anno['username']
+        issue = anno['issue'] if 'issue' in anno else ''
+        issue_start = anno['issue_start'] if 'issue_start' in anno else ''
+        issue_end = anno['issue_end'] if 'issue_end' in anno else ''
+        abs_issue = anno['abstract_issue'] if 'abstract_issue' in anno else ''
+        comment = anno['comment'] if 'comment' in anno else ''
+        category = ','.join(anno['category']) if 'category' in anno else ''
+        doc = col_document.find_one({'_id': uuid})
+        tid = doc['tid']
+        result += '{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\n'\
+            .format(dataset, tid, username, category, comment, abs_issue,
+                    issue_start, issue_end, issue)
+    return result
 
 __operation_entries = {
     'import_dataset': import_dataset,

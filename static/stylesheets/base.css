@@ -98,7 +98,10 @@ a:link {
     left: 0;
 }
 
-a#logout, a#management, a#home {
+a#logout,
+a#management,
+a#home,
+a#progress {
     display: block;
     position: absolute;
     right: 20px;
@@ -109,4 +112,8 @@ a#logout, a#management, a#home {
 
 a#management, a#home {
     right: 80px;
+}
+
+a#progress {
+    right: 182px;
 }

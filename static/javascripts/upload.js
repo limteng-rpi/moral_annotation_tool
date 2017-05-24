@@ -19,7 +19,14 @@ $(document).on('submit', '#upload-form', function(e) {
                 cache: false,
                 contentType: false,
                 success: function (response) {
-                    console.log(response);
+                    if (response.code === 200) {
+                        w2alert('The dataset has been uploaded')
+                            .ok(function () {
+                                window.location.replace('/management');
+                            });
+                    } else {
+                        $('#msg').text(response.msg).show();
+                    }
                 }
             });
         }

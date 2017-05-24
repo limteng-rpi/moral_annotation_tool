@@ -8,6 +8,7 @@
 
 #form-wrapper > form > label {
     display: block;
+    padding-bottom: 10px;
 }
 
 #msg {
