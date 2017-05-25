@@ -1,12 +1,12 @@
 import os
 import time
 from flask import Flask, redirect, jsonify, render_template, request, session,\
-    Response, send_from_directory
+    send_from_directory
 from werkzeug.utils import secure_filename
-from operations import __operation_entries, __admin_operation_entries, \
-    check_user, add_annotation, get_progress, create_annotation_file
+from operations import __operation_entries, check_user, add_user, \
+    add_annotation, get_progress, create_annotation_file
 from urllib.parse import quote_plus
-from bson import json_util, ObjectId
+from bson import json_util
 
 
 from configparser import ConfigParser
@@ -165,7 +165,7 @@ def register():
         session['username'] = None
         return render_template('register.html')
     elif request.method == 'POST':
-        result = __admin_operation_entries['add_user'](config, request.form)
+        result = add_user(config, request.form)
         return jsonify(result)
     else:
         return 'Invalid method: {}'.format(request.method)
@@ -207,4 +207,4 @@ def message():
 
 if __name__ == '__main__':
     app.secret_key = os.urandom(12)
-    app.run(host='0.0.0.0', port=8080, debug=True, threaded=True)
+    app.run(host='0.0.0.0', port=8080, threaded=True)

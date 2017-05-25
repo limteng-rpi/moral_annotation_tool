@@ -417,11 +417,3 @@ __operation_entries = {
 __admin_operation_entries = {
     'add_user': add_user
 }
-
-# config = ConfigParser()
-# config.read('./global.conf')
-# args = {
-#     'name': 'TestData',
-#     'path': '/Users/limteng/Data/test_tweets.zip'
-# }
-# __operation_entries['import_dataset'](config, args)
