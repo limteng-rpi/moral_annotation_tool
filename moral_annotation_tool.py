@@ -66,7 +66,7 @@ def annotation():
                                            dataset=dataset,
                                            username=session.get('username'))
                 else:
-                    return 'All documents have been annotated'
+                    return redirect('/message?msg=done')
             else:
                 return 'No specified dataset'
         elif request.method == 'POST':
@@ -195,6 +195,15 @@ def download(filename):
         return send_from_directory(directory=__download_dir, filename=filename)
     else:
         return jsonify({'code': 401, 'msg': 'Authorization failed: need admin account'})
+
+@app.route('/message')
+def message():
+    msg = request.args['msg']
+    if msg == 'done':
+        msg = 'All documents have been annotated.'
+    else:
+        msg = 'Unknown message.'
+    return render_template('message.html', msg=msg)
 
 if __name__ == '__main__':
     app.secret_key = os.urandom(12)

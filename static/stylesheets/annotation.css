@@ -233,3 +233,26 @@ button.anno-btn[labeled='true'] {
 	border-color: #51a7e8;
 	box-shadow: 0 0 5px rgba(81,167,232,0.1) inset;
 }
+
+button#submit-btn {
+	outline: none;
+	border-radius: 3px;
+    background: transparent;
+    background-color: #e2e2e2;
+    border: 0;
+    font-size: 13px;
+    padding: 5px 8px;
+	cursor: pointer;
+}
+
+button#submit-btn:hover {
+	background-color: #eee;
+}
+
+button#submit-btn:active {
+	background-color: #ddd;
+}
+
+#doc-btn-wrapper {
+	text-align: center;
+}
