@@ -56,9 +56,32 @@ def __parser_gnip(reader):
         except Exception:
             yield None
 
+def __parser_script_output(reader):
+    for line in reader:
+        try:
+            line = str(line, encoding='utf-8')
+            tweet = json.loads(line)
+            tid = tweet['tweet_id']
+            text = tweet['tweet']
+            retweet = False
+            timestamp = time.mktime(time.strptime(tweet['createdAt'][4:],
+                                                  '%b %d %H:%M:%S %z %Y'))
+            entities = {}
+            yield {
+                'tid': tid,
+                'text': text,
+                'full_text': text,
+                'retweet': retweet,
+                'timestamp': timestamp,
+                'entities': entities
+            }
+        except Exception:
+            yield None
+
 __parser = {
     'twitter_api': __parser_twitter_api,
-    'gnip': __parser_gnip
+    'gnip': __parser_gnip,
+    'script_output': __parser_script_output
 }
 
 # TODO add indexes
