@@ -6,8 +6,7 @@ import zipfile
 import traceback
 from pymongo import MongoClient
 from passlib.hash import pbkdf2_sha256
-from bson import json_util, ObjectId
-from configparser import ConfigParser
+from bson import json_util
 
 def __parser_twitter_api(reader):
     for line in reader:
