@@ -11,5 +11,5 @@
 3. Open `0.0.0.0:8080` in the browser.
 
 ## Dependency
-* Python3
+* Python3 is required.
 * `pip install flask passlib pymongo`
