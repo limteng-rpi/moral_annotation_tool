@@ -420,9 +420,9 @@ def create_annotation_file(config, args):
         category = ','.join(anno['category']) if 'category' in anno else ''
         doc = col_document.find_one({'_id': uuid})
         tid = doc['tid']
-        result += '{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\n'\
+        result += '{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}'\
             .format(dataset, tid, username, category, comment, abs_issue,
-                    issue_start, issue_end, issue)
+                    issue_start, issue_end, issue).replace('\n', ' ') + '\n'
     return result
 
 __operation_entries = {
