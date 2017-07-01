@@ -1,6 +1,7 @@
 /**
  * Created by limteng on 5/21/17.
  */
+var _dataset = null;
 $(document).ready(function() {
     init_document();
     init_toolbar();
@@ -107,7 +108,15 @@ function init_document() {
                 size: '20%',
                 sortable: true
             }
-        ]
+        ],
+        onClick: function(event) {
+            var grid = this;
+            var record = grid.get(event.recid);
+            var tid = record['tid'];
+            // window.open('/annotation?doc_id=' + doc_id);
+            window.location.replace('/annotation/' + encodeURIComponent(_dataset)
+                + '/' + encodeURIComponent(tid));
+        }
     })
 }
 
@@ -120,6 +129,7 @@ function select_dataset() {
             var doc_list = response.result;
             w2ui.document.clear();
             w2ui.document.add(doc_list);
+            _dataset = dataset;
         }
     });
 }

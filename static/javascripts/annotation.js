@@ -5,11 +5,13 @@ var __status = {};
 
 $(document).ready(function () {
     init_doc_status();
+    retrieve_annotation();
 }).on('click', 'span.doc-body-char', char_click)
     .on('click', 'button.category-btn', category_btn_click)
     .on('click', 'button.skip-btn', skip_btn_click)
     .on('click', 'button.unclear-btn', unclear_btn_click)
-    .on('click', 'button#submit-btn', submit_btn_click);
+    .on('click', 'button#submit-btn', submit_btn_click)
+    .on('click', 'button#update-btn', update_btn_click);
 
 function init_doc_status() {
     $('.doc-item').each(function (i, v) {
@@ -180,4 +182,72 @@ function submit_btn_click() {
             }
         }, 'json');
     }
+}
+
+function update_btn_click() {
+    var dataset = $('#main').attr('dataset');
+    var annotation_list = [];
+    $.each(__status, function(k, v) {
+        var annotation = extract_annotation(k);
+        if (!('unlabeled' in annotation && annotation.unlabeled)) {
+            annotation_list.push(annotation);
+        }
+    });
+    if (annotation_list.length > 0) {
+        $.post('/annotation/' + encodeURIComponent(dataset) + '/null', {
+            'annotation_list': JSON.stringify(annotation_list)
+        }, function(response) {
+            if (response.code === 200) {
+                window.location.replace('/');
+            } else {
+            }
+        }, 'json');
+    }
+}
+
+/**
+ * Retrieve existing annotation under 'single' mode
+ */
+function retrieve_annotation() {
+    var main = $('#main');
+    var mode = main.attr('mode');
+    if (mode === 'batch') return;
+
+
+    var username = main.attr('username');
+    var dataset = main.attr('dataet');
+    $('.doc-item').each(function(i, doc) {
+        doc = $(doc);
+        var uuid = doc.attr('uuid');
+        $.getJSON('/operation?entry=get_annotation&username=' + encodeURIComponent(username)
+            + '&uuid=' + encodeURIComponent(uuid) + '&dataset=' + encodeURIComponent(dataset),
+        function(response) {
+            if (response.code === 200 && response.result.annotated) {
+                var annotation = response.result.annotation;
+                if ('unclear' in annotation && annotation.unclear) {
+                    $('button.unclear-btn[uuid="' + uuid + '"]').click();
+                    return true;
+                }
+                if ('skip' in annotation && annotation.skip) {
+                    $('button.skip-btn[uuid="' + uuid + '"]').click();
+                    return true;
+                }
+                if ('category' in annotation) {
+                    $.each(annotation.category, function(i, cate) {
+                        $('button.category-btn[uuid="' + uuid + '"][value="' + cate + '"]').click();
+                    });
+                }
+                if (annotation.issue_start !== -1 && annotation.issue_end !== -1) {
+                    $('.doc-body-char[uuid="' + uuid + '"][char-index="' + annotation.issue_start + '"]').click();
+                    $('.doc-body-char[uuid="' + uuid + '"][char-index="' + annotation.issue_end + '"]').click();
+                }
+                if ('abstract_issue' in annotation) {
+                    $('input.issue-input[uuid="' + uuid + '"]').val(annotation.abstract_issue);
+                }
+                if ('comment' in annotation) {
+                    $('input.comment-input[uuid="' + uuid + '"]').val(annotation.comment);
+                }
+            }
+        })
+    });
 }

@@ -136,7 +136,7 @@ def get_dataset(config, args):
     documents = []
     for doc in collection.find():
         doc['id'] = doc.pop('_id', None)
-        doc['timestamp'] = time.strftime("%b %d, %Y %H:%M:%S",
+        doc['timestamp'] = time.strftime("%Y-%m-%d %H:%M:%S",
                                          time.localtime(doc['timestamp']))
         documents.append(doc)
     client.close()
@@ -154,13 +154,13 @@ def get_dataset_and_document(config, args):
     for doc in col_document.find():
         selected_ids.add(doc['_id'])
         doc['id'] = doc.pop('_id', None)
-        doc['timestamp'] = time.strftime("%b %d, %Y %H:%M:%S",
+        doc['timestamp'] = time.strftime("%Y-%m-%d %H:%M:%S",
                                          time.localtime(doc['timestamp']))
         document.append(doc)
     for doc in col_dataset.find():
         if doc['_id'] not in selected_ids:
             doc['id'] = doc.pop('_id', None)
-            doc['timestamp'] = time.strftime("%b %d, %Y %H:%M:%S",
+            doc['timestamp'] = time.strftime("%Y-%m-%d %H:%M:%S",
                                              time.localtime(doc['timestamp']))
             dataset.append(doc)
     return {
@@ -185,7 +185,7 @@ def get_document(config, args):
         uuid = doc['_id']
         if uuid in annotated_doc:
             continue
-        timestamp = time.strftime("%b %d, %Y %H:%M:%S",
+        timestamp = time.strftime("%Y-%m-%d %H:%M:%S",
                                          time.localtime(doc['timestamp']))
         tid = doc['tid']
         text = doc['full_text']
@@ -203,6 +203,27 @@ def get_document(config, args):
             break
     client.close()
     return batch
+
+def get_document_single(config, args):
+    dataset = args['dataset']
+    tid = args['tid']
+    db_host = config['db']['host']
+    db_port = int(config['db']['port'])
+    client = MongoClient(host=db_host, port=db_port)
+    col_document = client[config['db']['name']][config['db']['col.document']]
+    doc = col_document.find_one({'tid': tid, 'dataset': dataset})
+    if doc:
+        return [{
+            'id': doc['_id'],
+            'timestamp': time.strftime("%Y-%m-%d %H:%M:%S",
+                                       time.localtime(doc['timestamp'])),
+            'text': doc['full_text'],
+            'text_char': [[i, c] for i, c in enumerate(doc['full_text'], 0)],
+            'retweet': doc['retweet'],
+            'tid': tid
+        }]
+    else:
+        return None
 
 def add_document(config, args):
     id_list = args['id_list']
@@ -326,7 +347,28 @@ def add_annotation(config, args):
         print(rst)
         return True
     except Exception as e:
-        print(e)
+        traceback.print_exc()
+        return False
+
+def update_annotation(config, args):
+    try:
+        username = args['username']
+        annotation_list = json.loads(args['annotation_list'])
+        db_host = config['db']['host']
+        db_port = int(config['db']['port'])
+        client = MongoClient(host=db_host, port=db_port)
+        col_annotation = client[config['db']['name']][config['db']['col.annotation']]
+        bulk = col_annotation.initialize_unordered_bulk_op()
+        for annotation in annotation_list:
+            annotation['username'] = username
+            col_annotation.remove({'username': username, 'uuid': annotation['uuid']})
+            bulk.insert(annotation)
+        rst = bulk.execute()
+        client.close()
+        print(rst)
+        return True
+    except Exception as e:
+        traceback.print_exc()
         return False
 
 def get_dataset_names(config, args):
@@ -356,7 +398,7 @@ def get_user_document(config, args):
         annotated_doc.add(anno['uuid'])
     for doc in col_document.find({'dataset': dataset}):
         uuid = doc['_id']
-        timestamp = time.strftime("%b %d, %Y %H:%M:%S",
+        timestamp = time.strftime("%Y-%m-%d %H:%M:%S",
                                   time.localtime(doc['timestamp']))
         tid = doc['tid']
         text = doc['full_text']
@@ -392,7 +434,7 @@ def get_progress(config, args):
         anno['unclear'] = '●' if 'unclear' in anno and anno['unclear'] else '○'
         anno['skip'] = '●' if 'skip' in anno and anno['skip'] else '○'
         anno['retweet'] = '●' if doc['retweet'] else '○'
-        anno['timestamp'] = time.strftime("%b %d, %Y %H:%M:%S",
+        anno['timestamp'] = time.strftime("%Y-%m-%d %H:%M:%S",
                                           time.localtime(anno['timestamp']))
         annotation_list.append(anno)
     client.close()
@@ -425,6 +467,21 @@ def create_annotation_file(config, args):
                     issue_start, issue_end, issue).replace('\n', ' ') + '\n'
     return result
 
+
+def get_annotation(config, args):
+    username = args['username']
+    uuid = args['uuid']
+    with MongoClient(host=config['db']['host'], port=int(config['db']['port'])) as client:
+        col_annotation = client[config['db']['name']][config['db']['col.annotation']]
+        annotation = col_annotation.find_one({'username': username, 'uuid': uuid})
+        if annotation:
+            annotation.pop('_id', None)
+            return {'annotated': True, 'annotation': annotation}
+        else:
+            return {'annotated': False}
+
+
+
 __operation_entries = {
     'import_dataset': import_dataset,
     'get_dataset': get_dataset,
@@ -433,7 +490,9 @@ __operation_entries = {
     'get_dataset_and_document': get_dataset_and_document,
     'get_document': get_document,
     'get_dataset_names': get_dataset_names,
-    'get_user_document': get_user_document
+    'get_user_document': get_user_document,
+    'get_document_single': get_document_single,
+    'get_annotation': get_annotation
 }
 
 __admin_operation_entries = {

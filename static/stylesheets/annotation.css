@@ -234,7 +234,8 @@ button.anno-btn[labeled='true'] {
 	box-shadow: 0 0 5px rgba(81,167,232,0.1) inset;
 }
 
-button#submit-btn {
+button#submit-btn,
+button#update-btn {
 	outline: none;
 	border-radius: 3px;
     background: transparent;
@@ -245,11 +246,13 @@ button#submit-btn {
 	cursor: pointer;
 }
 
-button#submit-btn:hover {
+button#submit-btn:hover,
+button#update-btn:hover {
 	background-color: #eee;
 }
 
-button#submit-btn:active {
+button#submit-btn:active,
+button#update-btn:active{
 	background-color: #ddd;
 }
 

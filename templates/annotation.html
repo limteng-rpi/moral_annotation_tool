@@ -18,7 +18,7 @@
         <a id="home" href="/"><i class="fa fa-home" aria-hidden="true"></i> home</a>
         <a id="logout" href="/logout"><i class="fa fa-child" aria-hidden="true"></i> logout</a>
     </div>
-    <div id="main" dataset="{{ dataset }}">
+    <div id="main" dataset="{{ dataset }}" username="{{ username }}" mode="{{ mode }}">
         <div id="anno-wrapper">
             <ul id="doc-list">
                 {% for doc in doc_list %}
@@ -55,7 +55,11 @@
                 {% endfor %}
             </ul>
             <div id="doc-btn-wrapper">
-                <button id="submit-btn">Submit</button>
+                {% if update %}
+                    <button id="update-btn">Update</button>
+                {% else %}
+                    <button id="submit-btn">Submit</button>
+                {% endif %}
             </div>
         </div>
     </div>

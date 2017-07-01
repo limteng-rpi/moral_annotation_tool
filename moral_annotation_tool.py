@@ -4,7 +4,7 @@ from flask import Flask, redirect, jsonify, render_template, request, session,\
     send_from_directory
 from werkzeug.utils import secure_filename
 from operations import __operation_entries, check_user, add_user, \
-    add_annotation, get_progress, create_annotation_file
+    add_annotation, get_progress, create_annotation_file, update_annotation
 from urllib.parse import quote_plus
 from bson import json_util
 
@@ -13,6 +13,7 @@ from configparser import ConfigParser
 
 __current_dir = os.path.abspath(os.path.dirname(__file__))
 app = Flask(__name__)
+app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 1
 config = ConfigParser()
 config.read(os.path.join(__current_dir, 'global.conf'))
 __upload_dir = os.path.join(__current_dir, config['default']['upload_dir'])
@@ -64,7 +65,8 @@ def annotation():
                     return render_template('annotation.html',
                                            doc_list=document_list,
                                            dataset=dataset,
-                                           username=session.get('username'))
+                                           username=session.get('username'),
+                                           mode='batch')
                 else:
                     return redirect('/message?msg=done')
             else:
@@ -75,6 +77,38 @@ def annotation():
                 'annotation_list': request.form['annotation_list']
             })
             if rst:
+                return jsonify({'code': 200})
+            else:
+                return jsonify({'code': 500})
+        else:
+            return 'Invalid method: {}'.format(request.method)
+    else:
+        return redirect('/login?redirect={}'.format(quote_plus(request.url)))
+
+@app.route('/annotation/<dataset>/<tid>', methods=['GET', 'POST'])
+def annotate_single(dataset, tid):
+    """Annotate a single document"""
+    if session.get('login'):
+        if request.method == 'GET':
+                document_list = __operation_entries['get_document_single'](config, {
+                    'dataset': dataset,
+                    'tid': tid
+                })
+                if len(document_list) > 0:
+                    return render_template('annotation.html',
+                                           doc_list=document_list,
+                                           dataset=dataset,
+                                           username=session.get('username'),
+                                           update=True,
+                                           mode='single')
+                else:
+                    return redirect('/message?msg=document not found')
+        elif request.method == 'POST':
+            success = update_annotation(config, {
+                'username': session.get('username'),
+                'annotation_list': request.form['annotation_list']
+            })
+            if success:
                 return jsonify({'code': 200})
             else:
                 return jsonify({'code': 500})
