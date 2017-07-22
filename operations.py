@@ -78,10 +78,35 @@ def __parser_script_output(reader):
         except Exception:
             yield None
 
+def __parser_alm(reader):
+    for line in reader:
+        try:
+            line = str(line, encoding='utf-8')
+            tweet = json.loads(line)
+            tid = tweet['tid']
+            text = tweet['text']
+            full_text = tweet['full_text']
+            timestamp = tweet['timestamp']
+            entities = {'hashtags': tweet['entities']}
+            retweet = tweet['retweet']
+            yield {
+                'tid': tid,
+                'text': text,
+                'full_text': full_text,
+                'retweet': retweet,
+                'timestamp': timestamp,
+                'entities': entities
+            }
+        except Exception:
+            yield None
+
+
+
 __parser = {
     'twitter_api': __parser_twitter_api,
     'gnip': __parser_gnip,
-    'script_output': __parser_script_output
+    'script_output': __parser_script_output,
+    'alm': __parser_alm,
 }
 
 # TODO add indexes
