@@ -86,7 +86,7 @@ def __parser_alm(reader):
             tid = tweet['tid']
             text = tweet['text']
             full_text = tweet['full_text']
-            timestamp = tweet['timestamp']
+            timestamp = tweet['timestamp'] / 1000
             entities = {'hashtags': tweet['entities']}
             retweet = tweet['retweet']
             yield {
